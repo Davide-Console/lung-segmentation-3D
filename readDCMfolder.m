@@ -1,8 +1,10 @@
-function [ vol,info ] = readDCMfolder();
+function [ vol,info ] = readDCMfolder(time)
 
 % Place the current directory in the folder containing single .dcm files.
 
 %%
+
+cd(strcat('dataset/T_', int2str(time), '/CT/'))
 D = dir('*.dcm');
 
 im = dicomread( D(1).name );
@@ -17,4 +19,5 @@ for ind=1:size(D, 1)
 end
 close(f);
 
+cd ../../..
 end
