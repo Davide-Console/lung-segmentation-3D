@@ -34,7 +34,7 @@ Ls = subjects(subject_to_analyze);
 %% load single slice
 for z = 1:size(subjects(subject_to_analyze).data,3)
     img = squeeze(subjects(subject_to_analyze).data(:,:,z));
-    imshow(img, []);
+    % imshow(img, []);
     
     %% bring img to double
     
@@ -76,15 +76,18 @@ for z = 1:size(subjects(subject_to_analyze).data,3)
     [L,Centers] = imsegkmeans(img,2);
     lungs_val = min(Centers); % estraggo il centroide che contiene i polmoni
     
-    B = labeloverlay(img,L);
-    %figure();
-    %imshow(B)
+    
     if lungs_val == Centers(1)
         L = L == 1;
     else
         L = L == 2;
     end
     L = L+1;
+    
+    B = labeloverlay(img,L);
+    %figure();
+    imshow(B)
+
     Ls.data(:,:,z) = L;
 end
 volumeViewer(subjects(subject_to_analyze).data, Ls.data);
