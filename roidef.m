@@ -7,7 +7,7 @@ fileNames1=fileNames;
 
         b(:,:,i)=imbinarize(contr(:,:,i));
 
-        se=strel('disk',10,8);
+        se=strel('disk',4,4);
         c(:,:,i)=imerode(b(:,:,i),se);
 
         [Out(:,:,i), rp] = getLargestCc(c(:,:,i));
@@ -17,6 +17,9 @@ fileNames1=fileNames;
         mask(:,:,i) = imclearborder(Out_compl(:,:,i));
 
         lungs(:,:,i) = maskout(stack(:,:,i), mask(:,:,i));
+
+        lim_in = stretchlim(lungs(:,:,i));
+        lungs(:,:,i) = imadjust(lungs(:,:,i), [lim_in(1) (lim_in(2))],[0 1], 0.8);
 
         if ((sum(sum(lungs(:,:,i)==0)))>0.98*(sizeI(1)*sizeI(1)))
             fileNames1{i} = 0;

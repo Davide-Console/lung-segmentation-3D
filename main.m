@@ -7,3 +7,5 @@ clc; close all; clear
 %% ROI definition on CT
 [roi, fileNamesroi] = roidef(fileNamesCT, CT, dimCT);
 
+volumeViewer(roi);
+
