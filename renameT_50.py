@@ -19,4 +19,4 @@ def main(n, x):
 
 if __name__ == '__main__':
     main(1, 1930)
-    main(54, 1846)
+    main(53, 1846)
