@@ -5,7 +5,7 @@ clc; close all; clear
 [CT, infoCT, fileNamesCT, dimCT] = imgload();
 
 %% ROI definition on CT
-[roi, fileNamesroi] = roidef(fileNamesCT, CT, dimCT);
+[roi] = roidef(CT);
 
 volumeViewer(roi);
 

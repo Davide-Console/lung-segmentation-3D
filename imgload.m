@@ -2,7 +2,7 @@
 function [data, info, names, dim] = imgload ()
     
 
-    fileFolder=fullfile(pwd,'dataset/T_90/CT');
+    fileFolder=fullfile(pwd,'dataset/T_50/CT');
     hWaitBar=waitbar(0,'Reading CT stack');
     
     files=dir(fullfile(fileFolder,'*.dcm'));
