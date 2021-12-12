@@ -1,4 +1,4 @@
-function [Xout rp] = getLargestCc(Xin, conn, n)
+function [Xout, rp] = getLargestCc(Xin, n, conn)
 % GETLARGESTCC  Returns n largest connected-components in the input N-D array.
 %
 % Inputs:

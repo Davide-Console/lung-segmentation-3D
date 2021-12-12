@@ -1,5 +1,5 @@
 %% ROI segmentation
-function [lungs] = roidef(stack)
+function [lungs, mask] = roidef(stack)
     for i=size(stack,3):-1:1
         lim_in=stretchlim(stack(:,:,i));
         contr(:,:,i)=imadjust(stack(:,:,i),[lim_in(1) (lim_in(2))],[0 1]);
