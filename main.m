@@ -46,8 +46,8 @@ for z = 1:size(subjects(subject_to_analyze).data,3)
     % imshow(img, []);
     
     %% contrast adjustments
-    %figure();
-    %imhist(img);
+    figure();
+    imhist(img);
     hist_pre = imhist(img);
     LOW_in = 0.0;
     HIGH_in = 1.0;
@@ -61,10 +61,10 @@ for z = 1:size(subjects(subject_to_analyze).data,3)
     end
     HIGH_in = HIGH_in/255;
     img = imadjust(img, [LOW_in HIGH_in], [0.0 1.0], 0.5);
-    %figure();
-    %imhist(img);
+    figure();
+    imhist(img);
     
-    %% background adjustments
+    %% background adjustments, filling background starting from the four corners
     
     img = fill_area(img, 1, 1, 0.3, 0.3, 0.4, 1.0);
     img = fill_area(img, 1, size(img, 2), 0.3, 0.3, 0.4, 1.0);
