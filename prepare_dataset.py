@@ -20,7 +20,7 @@ def main(n, x):
 
 
 if __name__ == '__main__':
-    if os.path.exists('Resources.zip'):
+    if os.path.exists('Resources.zip') and not os.path.exists('dataset'):
         print("Extracting zip folder")
         zip_ref = zipfile.ZipFile('Resources.zip', 'r')
         zip_ref.extractall()

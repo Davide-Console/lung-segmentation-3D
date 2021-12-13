@@ -58,7 +58,7 @@
 clc; close all; clear; 
 
 %% Loading data
-hWaitBar=waitbar(0,'Reading CT stacks');
+hWaitBar=waitbar(0,'Processing CTs');
 
 apply_noise = false; % set to false to not apply noise
 
