@@ -1,8 +1,17 @@
 %% ROI segmentation
-function [lungs, mask] = roidef(stack, view)
+function [lungs, mask] = roidef(stack, view, noise_density)
 
     if strcmp(view, 'axial')
         for i=size(stack,3):-1:1
+            
+            if (0 <= noise_density) && (noise_density <= 0.05)
+                stack(:,:,i) = medfilt2(stack(:,:,i), [3 3]);
+            elseif (0.05 < noise_density) && (noise_density <= 0.2)
+                stack(:,:,i) = medfilt2(stack(:,:,i), [4 4]);
+            elseif noise_density > 0.2
+                stack(:,:,i) = medfilt2(stack(:,:,i), [5 5]);
+            end
+
             lim_in=stretchlim(stack(:,:,i));
             contr(:,:,i)=imadjust(stack(:,:,i),[lim_in(1) (lim_in(2))],[0 1]);
     
@@ -24,14 +33,25 @@ function [lungs, mask] = roidef(stack, view)
     
         end
     elseif strcmp(view, 'coronal')
+        
         stack = permute(stack, [3 2 1]);
+
         for i=size(stack,3):-1:1
+
+            if (0 <= noise_density) && (noise_density <= 0.05)
+                stack(:,:,i) = medfilt2(stack(:,:,i), [3 3]);
+            elseif (0.05 < noise_density) && (noise_density <= 0.2)
+                stack(:,:,i) = medfilt2(stack(:,:,i), [4 4]);
+            elseif noise_density > 0.2
+                stack(:,:,i) = medfilt2(stack(:,:,i), [5 5]);
+            end
+
             lim_in=stretchlim(stack(:,:,i));
             contr(:,:,i)=imadjust(stack(:,:,i),[lim_in(1) (lim_in(2))],[0 1], 0.5);
     
             b(:,:,i)=imbinarize(contr(:,:,i));
     
-            se=strel('disk',1,0);
+            se=strel('disk',3, 4);
             c(:,:,i)=imerode(b(:,:,i),se);
             
             [Out(:,:,i), ~] = getLargestCc(c(:,:,i));
