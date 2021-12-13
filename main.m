@@ -60,18 +60,30 @@ clc; close all; clear;
 %% Loading data
 hWaitBar=waitbar(0,'Reading CT stacks');
 
+apply_noise = false; % set to false to not apply noise
+
 for time = 0:10:90
 
     index = time/10 + 1;
     results(index).time = time; %#ok<*SAGROW> 
     [CT, infoCT, fileNamesCT, dimCT] = imgload(time);
     CT = CT(127:337,:,1:70);
+    
+    % Adding Noise
+    noise='salt & pepper';
+    noise_density = 0.05;
+    if apply_noise == true
+        CT_noisy = imnoise(CT, noise, noise_density);
+    else
+        CT_noisy = CT;
+    end
+
     z_dim = infoCT.SliceThickness;
     x_dim = infoCT.PixelSpacing(1);
     y_dim = infoCT.PixelSpacing(2);
     results(index).voxel_dim = x_dim*y_dim*z_dim; % mm^3
     
-    mask = roidef(CT, 'axial');
+    mask = roidef(CT_noisy, 'axial', noise_density);
     [mask_out, ~] = getLargestCc(mask(:,:,:), 1);
     results(index).mask_ax = mask_out;
     results(index).ax_volume = sum(sum(sum(results(index).mask_ax)))*results(index).voxel_dim;
@@ -83,7 +95,7 @@ for time = 0:10:90
     results(index).lungs_ax = maskout(CT, mask_out);
     results(index).edges_ax = edge_detection(results(index).mask_ax);
     
-    mask = roidef(CT, 'coronal');
+    mask = roidef(CT_noisy, 'coronal', noise_density);
     [mask_out, ~] = getLargestCc(mask(:,:,:), 1); 
     results(index).mask_cor = mask_out;
     results(index).cor_volume = sum(sum(sum(results(index).mask_cor)))*results(index).voxel_dim;
@@ -99,6 +111,7 @@ for time = 0:10:90
     
 end
 delete(hWaitBar);
+
 
 %% volume plot
 times = [];
