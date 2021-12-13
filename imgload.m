@@ -1,9 +1,8 @@
 %% Data loading 
-function [data, info, names, dim] = imgload ()
-    
-
-    fileFolder=fullfile(pwd,'dataset/T_20/CT');
-    hWaitBar=waitbar(0,'Reading CT stack');
+function [data, info, names, dim] = imgload (time)
+    id ='images:dicominfo:fileVRDoesNotMatchDictionary';
+    warning('off',id)
+    fileFolder=fullfile(pwd,strcat('dataset/T_', int2str(time), '/CT'));
     
     files=dir(fullfile(fileFolder,'*.dcm'));
     names={files.name};
@@ -21,8 +20,6 @@ function [data, info, names, dim] = imgload ()
     for i=length(names):-1:1
         fname=fullfile(fileFolder,names{i});
         data(:,:,i)=uint16(dicomread(fname));
-        waitbar((length(names)-i+1)/length(names));
     end
-    delete(hWaitBar);
 end
 

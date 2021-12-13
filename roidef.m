@@ -49,6 +49,6 @@ function [lungs, mask] = roidef(stack, view)
             lungs(:,:,i) = imadjust(lungs(:,:,i), [lim_in(1) (lim_in(2))],[0 1], 0.8);
         end
     else
-        disp('codio');
+        error('You have to select either "axial" or "coronal"');
     end
 end
