@@ -23,7 +23,7 @@
 %   - edegs_cor: stores a 3D-logical-matrix with pixel = true where lungs'
 %   edges have been detected from the axial view. 
 %   
-%   - Keep in mind that for coronal view volumes have been permuted: in 
+%   - Keep in mind that for coronal view volumes have been permuted: 
 %   to visualize coronal view with volumeViewer select the 'XY Slice' view.
 %
 %   % Examples on how to visualize results:
@@ -71,7 +71,7 @@ for time = 0:10:90
     y_dim = infoCT.PixelSpacing(2);
     results(index).voxel_dim = x_dim*y_dim*z_dim; % mm^3
     
-    [~, mask] = roidef(CT, 'axial');
+    mask = roidef(CT, 'axial');
     [mask_out, ~] = getLargestCc(mask(:,:,:), 1);
     results(index).mask_ax = mask_out;
     results(index).ax_volume = sum(sum(sum(results(index).mask_ax)))*results(index).voxel_dim;
@@ -83,7 +83,7 @@ for time = 0:10:90
     results(index).lungs_ax = maskout(CT, mask_out);
     results(index).edges_ax = edge_detection(results(index).mask_ax);
     
-    [~, mask] = roidef(CT, 'coronal');
+    mask = roidef(CT, 'coronal');
     [mask_out, ~] = getLargestCc(mask(:,:,:), 1); 
     results(index).mask_cor = mask_out;
     results(index).cor_volume = sum(sum(sum(results(index).mask_cor)))*results(index).voxel_dim;

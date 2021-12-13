@@ -1,4 +1,16 @@
-%% Data loading 
+% imgload returns a CT stack, CT header, filenames containing the slices
+% and dimension of the stack
+%
+% Inputs:
+% -------
+%   time - time instance of the CT to be load
+%
+% Outputs:
+% --------
+%   data - 3-D array with CT pixels
+%   info - header of the CT scan
+%   names - list of filenames of the CT stack
+%   dim - dimensions of the stack
 function [data, info, names, dim] = imgload (time)
     id ='images:dicominfo:fileVRDoesNotMatchDictionary';
     warning('off',id)

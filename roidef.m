@@ -1,29 +1,43 @@
-%% ROI segmentation
-function [lungs, mask] = roidef(stack, view)
+% roidef returns a mask with lungs position given a CT stack
+% Inputs:
+% -------
+%   stack - input 3-D array of the CT scan
+%   view - "axial" or "coronal"
+%
+% Outputs:
+% --------
+%   mask - 3-D array of the same dimensions of stack with pixel = true
+%   where lungs have been detected
+
+function mask = roidef(stack, view)
 
     if strcmp(view, 'axial')
         for i=size(stack,3):-1:1
+
+            % contrast adjustments
             lim_in=stretchlim(stack(:,:,i));
             contr(:,:,i)=imadjust(stack(:,:,i),[lim_in(1) (lim_in(2))],[0 1]);
-    
+            
+            % image to logic values
             b(:,:,i)=imbinarize(contr(:,:,i));
-    
+            
+            % elements inside lungs removal
             se=strel('disk',4,4);
             c(:,:,i)=imerode(b(:,:,i),se);
-    
+            
+            % extraction of largest component of the current slice
             [Out(:,:,i), ~] = getLargestCc(c(:,:,i));
-    
+            
+            % complementary of the image: lungs have pixel = 1
             Out_compl(:,:,i) = imcomplement(Out(:,:,i));
-    
+            
+            % filling background with the same value of the body
             mask(:,:,i) = imclearborder(Out_compl(:,:,i));
-    
-            lungs(:,:,i) = maskout(stack(:,:,i), mask(:,:,i));
-    
-            lim_in = stretchlim(lungs(:,:,i));
-            lungs(:,:,i) = imadjust(lungs(:,:,i), [lim_in(1) (lim_in(2))],[0 1], 0.8);
     
         end
     elseif strcmp(view, 'coronal')
+        % permuting the stack in order to have coronal view in the third
+        % dimension
         stack = permute(stack, [3 2 1]);
         for i=size(stack,3):-1:1
             lim_in=stretchlim(stack(:,:,i));
@@ -37,16 +51,11 @@ function [lungs, mask] = roidef(stack, view)
             [Out(:,:,i), ~] = getLargestCc(c(:,:,i));
     
             Out_compl(:,:,i) = imcomplement(Out(:,:,i));
-
+            
+            % using fill_area instead of imclearborder for more flexibility
             [mask(:,:,i), ~] = fill_area(Out_compl(:,:,i), 1, 1, 1, 0, 0, 0, 0);
             [mask(:,:,i), ~] = fill_area(mask(:,:,i), 1, size(Out_compl(:,:,i), 2), 1, 0, 0, 0, 0);
-
-            %mask(:,:,i) = imclearborder(Out_compl(:,:,i));
     
-            lungs(:,:,i) = maskout(stack(:,:,i), mask(:,:,i));
-    
-            lim_in = stretchlim(lungs(:,:,i));
-            lungs(:,:,i) = imadjust(lungs(:,:,i), [lim_in(1) (lim_in(2))],[0 1], 0.8);
         end
     else
         error('You have to select either "axial" or "coronal"');
