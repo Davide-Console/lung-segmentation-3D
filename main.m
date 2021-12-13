@@ -7,7 +7,7 @@ clc; close all; clear
 CT = CT(127:337,:,1:70);
 %% Adding Noise
 noise='salt & pepper';
-noise_density = 0.35; % 0 0.2 0.35
+noise_density = 0.05; % 0 0.2 0.35
 
 CT = imnoise(CT, noise, noise_density);
 
