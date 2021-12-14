@@ -9,18 +9,33 @@
 %   mask - 3-D array of the same dimensions of stack with pixel = true
 %   where lungs have been detected
 
-function mask = roidef(stack, view, noise_density)
+function mask = roidef(stack, view, noise, noise_att)
 
     if strcmp(view, 'axial')
         for i=size(stack,3):-1:1
             
-            if (0 <= noise_density) && (noise_density <= 0.05)
-                stack(:,:,i) = medfilt2(stack(:,:,i), [3 3]);
-            elseif (0.05 < noise_density) && (noise_density <= 0.2)
-                stack(:,:,i) = medfilt2(stack(:,:,i), [4 4]);
-            elseif noise_density > 0.2
-                stack(:,:,i) = medfilt2(stack(:,:,i), [5 5]);
+            % Filtering noise
+            if strcmp(noise, 'salt & pepper')
+                if (0 <= noise_att) && (noise_att <= 0.05)
+                    stack(:,:,i) = medfilt2(stack(:,:,i), [3 3]);
+                elseif (0.05 < noise_att) && (noise_att <= 0.2)
+                    stack(:,:,i) = medfilt2(stack(:,:,i), [4 4]);
+                elseif noise_att > 0.2
+                    stack(:,:,i) = medfilt2(stack(:,:,i), [5 5]);
+                end
+            elseif strcmp(noise, 'gaussian')
+                if noise_att == 0.000001 % err_noise = 1.5071%, err = 0.1062%
+                    h = fspecial('gaussian', 3, 0.5);
+                    stack(:,:,i) = imfilter(stack(:,:,i), h, 'conv');
+                elseif noise_att == 0.00001 % err_noise = 76.7592%, err = 0.1102%
+                    h = fspecial('gaussian', 3, 1);
+                    stack(:,:,i) = imfilter(stack(:,:,i), h, 'conv');
+                elseif noise_att == 0.0001 % err =  0.3251%
+                    h = fspecial('gaussian', 5, 2);
+                    stack(:,:,i) = imfilter(stack(:,:,i), h, 'conv');
+                end
             end
+            
             % contrast adjustments
             lim_in=stretchlim(stack(:,:,i));
             contr(:,:,i)=imadjust(stack(:,:,i),[lim_in(1) (lim_in(2))],[0 1]);
@@ -49,14 +64,27 @@ function mask = roidef(stack, view, noise_density)
 
         for i=size(stack,3):-1:1
 
-            if (0 <= noise_density) && (noise_density <= 0.05)
-                stack(:,:,i) = medfilt2(stack(:,:,i), [3 3]);
-            elseif (0.05 < noise_density) && (noise_density <= 0.2)
-                stack(:,:,i) = medfilt2(stack(:,:,i), [4 4]);
-            elseif noise_density > 0.2
-                stack(:,:,i) = medfilt2(stack(:,:,i), [5 5]);
+            if strcmp(noise, 'salt & pepper')
+                if (0 <= noise_att) && (noise_att <= 0.05)
+                    stack(:,:,i) = medfilt2(stack(:,:,i), [3 3]);
+                elseif (0.05 < noise_att) && (noise_att <= 0.2)
+                    stack(:,:,i) = medfilt2(stack(:,:,i), [4 4]);
+                elseif noise_att > 0.2
+                    stack(:,:,i) = medfilt2(stack(:,:,i), [5 5]);
+                end
+            elseif strcmp(noise, 'gaussian')
+                if noise_att == 0.000001 % err_noise = 2.9403%, err = 0.4238%
+                    h = fspecial('gaussian', 3, 0.5);
+                    stack(:,:,i) = imfilter(stack(:,:,i), h, 'conv');
+                elseif noise_att == 0.00001 % err_noise = 9.8690%, err = 0.1334%
+                    h = fspecial('gaussian', 3, 0.8);
+                    stack(:,:,i) = imfilter(stack(:,:,i), h, 'conv');
+                elseif noise_att == 0.0001 % err_noise = 29.1135%, err =  1.0247%
+                    h = fspecial('gaussian', 5, 1);
+                    stack(:,:,i) = imfilter(stack(:,:,i), h, 'conv');
+                end
             end
-
+            
             lim_in=stretchlim(stack(:,:,i));
             contr(:,:,i)=imadjust(stack(:,:,i),[lim_in(1) (lim_in(2))],[0 1], 0.5);
     
