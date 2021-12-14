@@ -60,7 +60,18 @@ clc; close all; clear;
 %% Loading data
 hWaitBar=waitbar(0,'Processing CTs');
 
-apply_noise = false; % set to false to not apply noise
+apply_noise = false; % set to false not to apply noise
+
+if apply_noise == false
+    noise = 'none';
+    noise_att = 0;
+end
+
+% If apply_noise is set to true, please select the noise we would like to
+% test:
+
+% noise = 'salt & pepper';
+% noise = 'gaussian';
 
 for time = 0:10:90
 
@@ -70,10 +81,15 @@ for time = 0:10:90
     CT = CT(127:337,:,1:70);
     
     % Adding Noise
-    noise='salt & pepper';
-    noise_density = 0.05;
     if apply_noise == true
-        CT_noisy = imnoise(CT, noise, noise_density);
+        if strcmp(noise, 'salt & pepper')
+            noise_att = 0.05;
+            CT_noisy = imnoise(CT, noise, noise_density);
+        else
+            M = 0;
+            noise_att = 0.00001;
+            CT_noisy = imnoise(CT, 'gaussian', M, noise_att);
+        end
     else
         CT_noisy = CT;
     end
@@ -83,7 +99,7 @@ for time = 0:10:90
     y_dim = infoCT.PixelSpacing(2);
     results(index).voxel_dim = x_dim*y_dim*z_dim; % mm^3
     
-    mask = roidef(CT_noisy, 'axial', noise_density);
+    mask = roidef(CT_noisy, 'axial', noise, noise_att);
     [mask_out, ~] = getLargestCc(mask(:,:,:), 1);
     results(index).mask_ax = mask_out;
     results(index).ax_volume = sum(sum(sum(results(index).mask_ax)))*results(index).voxel_dim;
@@ -95,7 +111,7 @@ for time = 0:10:90
     results(index).lungs_ax = maskout(CT, mask_out);
     results(index).edges_ax = edge_detection(results(index).mask_ax);
     
-    mask = roidef(CT_noisy, 'coronal', noise_density);
+    mask = roidef(CT_noisy, 'coronal', noise, noise_att);
     [mask_out, ~] = getLargestCc(mask(:,:,:), 1); 
     results(index).mask_cor = mask_out;
     results(index).cor_volume = sum(sum(sum(results(index).mask_cor)))*results(index).voxel_dim;
