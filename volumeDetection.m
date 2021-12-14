@@ -1,4 +1,4 @@
-% roidef returns a mask with lungs position given a CT stack
+% volumeDetection returns a mask with lungs position given a CT stack
 % Inputs:
 % -------
 %   stack - input 3-D array of the CT scan
@@ -9,7 +9,7 @@
 %   mask - 3-D array of the same dimensions of stack with pixel = true
 %   where lungs have been detected
 
-function mask = roidef(stack, view, noise, noise_att)
+function mask = volumeDetection(stack, view, noise, noise_att)
 
     if strcmp(view, 'axial')
         for i=size(stack,3):-1:1

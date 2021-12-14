@@ -57,11 +57,9 @@
 %   cor_vol_0 = results(time + 1).cor_volume;
 %   fprintf("Axial view volume: %.2f liters\nCoronal view volume: %.2f liters\n", ax_vol_0/1e+06, cor_vol_0/1e+06); 
 
-%% 
-
 clc; close all; clear; 
 
-%% Loading data
+%% Noise Selection
 
 response = questdlg('Would you like to apply noise to the CT scans?', ...
 	'Noise selection', ...
@@ -85,15 +83,20 @@ end
 
 hWaitBar=waitbar(0,'Processing CTs');
 
+
+%% Data loading and processing
+
 times = [0 10 20 30 40 50 60 70 80 90];
 
 for time = times
 
     index = time/10 + 1;
     results(index).time = time/10; %#ok<*SAGROW>
+    
+    % Loading CT stack and storing header
     [CT, infoCT, fileNamesCT, dimCT] = imgload(time);
     results(index).infoCT = infoCT;
-    CT = CT(127:337,:,1:70);
+    CT = CT(127:337,:,1:70); % Useless slices removal
     
     % Adding Noise
     if apply_noise == true
@@ -108,26 +111,39 @@ for time = times
     else
         CT_noisy = CT;
     end
-
+    
+    % Extracting and storing of voxel dimensions from CT header
     z_dim = infoCT.SliceThickness;
     x_dim = infoCT.PixelSpacing(1);
     y_dim = infoCT.PixelSpacing(2);
     results(index).x = x_dim; results(index).y = y_dim; results(index).z = z_dim;
     results(index).voxel_dim = x_dim*y_dim*z_dim; % mm^3
     
-    mask = roidef(CT_noisy, 'axial', noise, noise_att);
+    % Lungs volume detection from axial view
+    mask = volumeDetection(CT_noisy, 'axial', noise, noise_att);
+
+    % Extraction of the lungs from the mask. This is an extra step to
+    % remove eventual false positive not connected with lungs
     [mask_out, ~] = getLargestCc(mask(:,:,:), 1);
     results(index).mask_ax = mask_out;
     results(index).ax_volume = sum(sum(sum(results(index).mask_ax)))*results(index).voxel_dim;
+    % If the two lungs are not connected by the trachea the two largest
+    % volume are extracted
     if results(index).ax_volume < 2.2e6
         [mask_out, ~] = getLargestCc(mask(:,:,:), 2); 
         results(index).mask_ax = mask_out;
         results(index).ax_volume = sum(sum(sum(results(index).mask_ax)))*results(index).voxel_dim;
     end
+
+    % Extraction of lungs from the original CT stack based on pixel = true
+    % in mask_out
     results(index).lungs_ax = maskout(CT, mask_out);
+
+    % Edge detection on the mask
     results(index).edges_ax = edge_detection(results(index).mask_ax);
     
-    mask = roidef(CT_noisy, 'coronal', noise, noise_att);
+    % Lungs volume detection from coronal view
+    mask = volumeDetection(CT_noisy, 'coronal', noise, noise_att);
     [mask_out, ~] = getLargestCc(mask(:,:,:), 1); 
     results(index).mask_cor = mask_out;
     results(index).cor_volume = sum(sum(sum(results(index).mask_cor)))*results(index).voxel_dim;
@@ -136,6 +152,9 @@ for time = times
         results(index).mask_cor = mask_out;
         results(index).cor_volume = sum(sum(sum(results(index).mask_cor)))*results(index).voxel_dim;
     end
+
+    % Extraction of lungs from the original CT stack based on pixel = true
+    % in mask_out. CT is permuted to bring coronal view in the XY plane
     results(index).lungs_cor = maskout(permute(CT, [3 2 1]), mask_out);
     results(index).edges_cor = edge_detection(results(index).mask_cor);
     
@@ -145,7 +164,7 @@ end
 delete(hWaitBar);
 
 
-%% volume plot
+%% time-volume plot
 times = [];
 vol_ax = [];
 vol_cor = [];
