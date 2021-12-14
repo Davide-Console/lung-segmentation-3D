@@ -28,29 +28,33 @@
 %
 %   % Examples on how to visualize results:
 %
-%   % Access and visualize lungs from axial view at time = 50
+%   % Access and visualize lungs from axial view at time = 5s
 %   
-%   time = 50;
-%   lungs_ax_50 = results(time/10 + 1).lungs_ax;
-%   volumeViewer(lungs_ax_50);
+%   time = 5;
+%   lungs_ax_5 = results(time + 1).lungs_ax;
+%   scale_factors = [results(time+1).x, results(time+1).y, results(time+1).z];
+%   volumeViewer(lungs_ax_5, 'ScaleFactors', scale_factors);
 %
-%   % Access and visualize mask from axial view at time = 20
+%   % Access and visualize mask from axial view at time = 2s
 %   
-%   time = 20;
-%   mask_ax_20 = results(time/10 + 1).mask_ax;
-%   volumeViewer(mask_ax_20);
+%   time = 2;
+%   mask_ax_2 = results(time + 1).mask_ax;
+%   scale_factors = [results(time+1).x, results(time+1).y, results(time+1).z];
+%   volumeViewer(mask_ax_2, 'ScaleFactors', scale_factors);
 %
-%   % Access and visualize edges from coronal view at time = 70
+%   % Access and visualize edges from coronal view at time = 7s
 %   
-%   time = 70;
-%   edges_cor_70 = results(time/10 + 1).edges_cor;
-%   volumeViewer(edges_cor_70);
+%   time = 7;
+%   edges_cor_7 = results(time + 1).edges_cor;
+%   % scale factors in different order because of CT permutation
+%   scale_factors = [results(time+1).x, results(time+1).z, results(time+1).y]; 
+%   volumeViewer(edges_cor_7, 'ScaleFactors', scale_factors);
 %
-%   % Compare lungs volume between axial and coronal view at time = 0;
+%   % Compare lungs volume between axial and coronal view at time = 0s;
 %   
-%   time = 0;
-%   ax_vol_0 = results(time/10 + 1).ax_volume;
-%   cor_vol_0 = results(time/10 + 1).cor_volume;
+%   time = 0s;
+%   ax_vol_0 = results(time + 1).ax_volume;
+%   cor_vol_0 = results(time + 1).cor_volume;
 %   fprintf("Axial view volume: %.2f liters\nCoronal view volume: %.2f liters\n", ax_vol_0/1e+06, cor_vol_0/1e+06); 
 
 %% 
@@ -62,11 +66,14 @@ hWaitBar=waitbar(0,'Processing CTs');
 
 apply_noise = false; % set to false to not apply noise
 
-for time = 0:10:90
+times = [0 10 20 30 40 50 60 70 80 90];
+
+for time = times
 
     index = time/10 + 1;
-    results(index).time = time; %#ok<*SAGROW> 
+    results(index).time = time/10; %#ok<*SAGROW>
     [CT, infoCT, fileNamesCT, dimCT] = imgload(time);
+    results(index).infoCT = infoCT;
     CT = CT(127:337,:,1:70);
     
     % Adding Noise
@@ -81,6 +88,7 @@ for time = 0:10:90
     z_dim = infoCT.SliceThickness;
     x_dim = infoCT.PixelSpacing(1);
     y_dim = infoCT.PixelSpacing(2);
+    results(index).x = x_dim; results(index).y = y_dim; results(index).z = z_dim;
     results(index).voxel_dim = x_dim*y_dim*z_dim; % mm^3
     
     mask = roidef(CT_noisy, 'axial', noise_density);
@@ -118,8 +126,8 @@ times = [];
 vol_ax = [];
 vol_cor = [];
 for i = 1:length(results)
-    times = [times results(i).time]; %#ok<*AGROW> 
-    vol_ax = [vol_ax results(i).ax_volume];
+    times = [times results(i).time]; 
+    vol_ax = [vol_ax results(i).ax_volume]; %#ok<*AGROW> 
     vol_cor = [vol_cor results(i).cor_volume];
 end
 
