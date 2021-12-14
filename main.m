@@ -62,20 +62,28 @@
 clc; close all; clear; 
 
 %% Loading data
-hWaitBar=waitbar(0,'Processing CTs');
 
-apply_noise = false; % set to false not to apply noise
+response = questdlg('Would you like to apply noise to the CT scans?', ...
+	'Noise selection', ...
+	'Yes', 'No', 'No');
 
-if apply_noise == false
+if strcmp(response, 'Yes')
+    apply_noise = true; % set to false not to apply noise
+    response = questdlg('Which noise would you like to apply?', ...
+	'Noise selection', ...
+	'Salt & Pepper', 'Gaussian', 'Salt & Pepper');
+    if strcmp(response, 'Gaussian')
+        noise = 'gaussian';
+    else
+        noise = 'salt & pepper';
+    end
+else
+    apply_noise = false;
     noise = 'none';
     noise_att = 0;
 end
 
-% If apply_noise is set to true, please select the noise we would like to
-% test:
-
-% noise = 'salt & pepper';
-% noise = 'gaussian';
+hWaitBar=waitbar(0,'Processing CTs');
 
 times = [0 10 20 30 40 50 60 70 80 90];
 
@@ -91,7 +99,7 @@ for time = times
     if apply_noise == true
         if strcmp(noise, 'salt & pepper')
             noise_att = 0.05;
-            CT_noisy = imnoise(CT, noise, noise_density);
+            CT_noisy = imnoise(CT, noise, noise_att);
         else
             M = 0;
             noise_att = 0.00001;
