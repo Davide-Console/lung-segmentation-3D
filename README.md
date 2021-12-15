@@ -18,10 +18,39 @@
 ) page, select all the folder from _T_0_ to _T_90_ and download them
 - The download should be named _Resources.zip_
 - Move the zip file in the the `lung-segmentation-3D` folder that contains all the `.m` files.
+
+The working directory should look similar to:
+
+```text
+lung-segmentation-3D   # your WRK_DIR
+.
+├── prepare_dataset.py
+├── Resources.zip
+└── .m files
+```
+
 - Open a command prompt and execute:
   ```console
     python prepare_dataset.py
   ```
+
+Now your working directory should be:
+
+```text
+lung-segmentation-3D   # your WRK_DIR
+.
+├── prepare_dataset.py
+├── Resources.zip
+└── .m files
+└── dataset
+        ├── T_0
+        ├── ...
+        └── T_90
+              ├── CT
+              |    └── .dcm files
+              └── liver segmentation
+```  
+
 ## Execution
 
 - Once the project has been downloaded and the dataset prepared, head into the project working directory and execute on the MATLAB command prompt: 
