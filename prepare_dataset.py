@@ -23,8 +23,9 @@ if __name__ == '__main__':
     if os.path.exists('Resources.zip') and not os.path.exists('dataset'):
         print("Extracting zip folder")
         zip_ref = zipfile.ZipFile('Resources.zip', 'r')
-        zip_ref.extractall()
+        os.mkdir('dataset')
+        zip_ref.extractall('dataset/')
         zip_ref.close()
-        os.rename('Resources', 'dataset')
+        # os.rename('Resources', 'dataset')
     main(1, 1930)
     main(53, 1846)

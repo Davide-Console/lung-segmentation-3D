@@ -52,7 +52,7 @@
 %
 %   % Compare lungs volume between axial and coronal view at time = 0s;
 %   
-%   time = 0s;
+%   time = 0;
 %   ax_vol_0 = results(time + 1).ax_volume;
 %   cor_vol_0 = results(time + 1).cor_volume;
 %   fprintf("Axial view volume: %.2f liters\nCoronal view volume: %.2f liters\n", ax_vol_0/1e+06, cor_vol_0/1e+06); 
@@ -142,6 +142,8 @@ for time = times
     % Edge detection on the mask
     results(index).edges_ax = edge_detection(results(index).mask_ax);
     
+    waitbar((time)/95);
+
     % Lungs volume detection from coronal view
     mask = volumeDetection(CT_noisy, 'coronal', noise, noise_att);
     [mask_out, ~] = getLargestCc(mask(:,:,:), 1); 
@@ -158,7 +160,7 @@ for time = times
     results(index).lungs_cor = maskout(permute(CT, [3 2 1]), mask_out);
     results(index).edges_cor = edge_detection(results(index).mask_cor);
     
-    waitbar(time/90);
+    waitbar((time+5)/95);
     
 end
 delete(hWaitBar);
