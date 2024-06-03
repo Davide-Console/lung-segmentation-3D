@@ -1,10 +1,7 @@
-# Lung 3D-Segmentation in CT scans for 2021/2022 Medical Images course
-
-## Abstract
-Automated solutions to accelerate and standardize diagnostic processes are essential in many medical procedures. This project focuses on semantic segmentation for identifying specific regions within biomedical images. We developed an automatic algorithm for lung segmentation and boundary detection using CT volumes.
+# Lung 3D-Segmentation in CT scans
 
 ## Introduction
-Computed Tomography (CT) is the primary tool for pulmonary imaging, providing high spatial and temporal resolution and excellent contrast. CT volumes allow for effective lung segmentation and boundary detection. Our method employs a series of steps for Region of Interest (ROI) detection and extraction.
+Automated solutions to accelerate and standardize diagnostic processes are essential in many medical procedures. This project focuses on semantic segmentation for identifying specific regions within biomedical images. We developed an automatic algorithm for lung segmentation and boundary detection using CT volumes.
 
 ## Materials and Methods
 
@@ -25,24 +22,21 @@ The algorithm processes the 3D volume slice by slice and extracts the lungs by a
 9. Extracting lungs from the original image using the mask
 10. Performing edge detection with Sobel kernel
 
-![Algorithm Steps](path/to/algorithm_steps_image.png)
-*Fig. 1: Algorithm steps*
+<p align="center"> <img align="center" src="./images/a.png" width="175" /> <img align="center" src="./images/b.png" width="175" /> <img align="center" src="./images/c.png" width="175" /> <img align="center" src="./images/d.png" width="175" /> <img align="center" src="./images/e.png" width="175" /></p></br>
+<p align="center"> <img align="center" src="./images/f.png" width="175" /> <img align="center" src="./images/g.png" width="175" /><img align="center" src="./images/h.png" width="175" /> <img align="center" src="./images/i.png" width="175" /> <img align="center" src="./images/j.png" width="175" /></p>
+<p align="center">Algorithm steps from left to right, top to bottom</p>
 
 ## Results
 
 Our algorithm achieves good and consistent lung segmentation using simple approaches without requiring expensive computations like deep learning techniques. It remains reliable across different time frames.
 
-![3D Lungs Extraction](path/to/3d_lungs_extraction_image.png)
-*Fig. 3: 3D-Lungs extraction visualization*
+<p align="center"> <img align="center" src="./images/lungs3D.png" width="300" /></p>
+<p align="center">3D-Lungs extraction visualization</p>
 
 The algorithm performed best on the axial view due to higher spatial resolution. The robustness of the algorithm is demonstrated by consistent lung volume measurements across different time instances.
 
-![Lungs Volume Variation](path/to/lungs_volume_variation_image.png)
-*Fig. 2: Lungs volume variation along time*
-
-## Conclusion
-
-Future work could involve more complex preprocessing to adapt the algorithm to different diagnostic techniques.
+<p align="center"> <img align="center" src="./images/graph.png" width="600" /></p>
+<p align="center">Lungs volume variation along time</p>
 
 
 
